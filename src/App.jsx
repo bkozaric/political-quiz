@@ -7,6 +7,17 @@ function App() {
   const [responses, setResponses] = useState(Array(quizQuestions.length).fill(3));
   const [result, setResult] = useState(null);
 
+  const [showLongHint, setShowLongHint] = useState(false);
+
+  const toggleHint = () => {
+    setShowLongHint(!showLongHint);
+  };
+
+  useEffect(() => {
+    if (!quizQuestions[currentQuestionIndex].hintLong) {
+      setShowLongHint(false);
+    }
+  }, [currentQuestionIndex]);
 
 
   const handleNextQuestion = () => {
@@ -19,11 +30,6 @@ function App() {
       setResult(getPoliticalClassification(economicScore, socialScore));
     }
   };
-
-
-  useEffect(() => {
-    console.log(result)
-  }, [result]);
 
 
   function handlePreviousQuestion() {
@@ -39,8 +45,8 @@ function App() {
   };
 
   const getDotPosition = (economicScore, socialScore) => {
-    const x = ((economicScore + 10) / 20) * 100; 
-    const y = 100 - (((socialScore + 10) / 20) * 100); 
+    const x = (((economicScore + 10) / 20) * 100) - 1.3;
+    const y = 98.7 - (((socialScore + 10) / 20) * 100);
     return { x, y };
   };
 
@@ -54,7 +60,16 @@ function App() {
           <div className="question-container">
             <p className="question-count">Question {currentQuestionIndex + 1}/{quizQuestions.length}</p>
             <p className="question">{quizQuestions[currentQuestionIndex].question}</p>
-            <p className="hint">{quizQuestions[currentQuestionIndex].hint}</p>
+            <p className="hint">
+              {showLongHint && quizQuestions[currentQuestionIndex].hintLong
+                ? quizQuestions[currentQuestionIndex].hintLong
+                : quizQuestions[currentQuestionIndex].hint}
+              {quizQuestions[currentQuestionIndex].hintLong && (
+                <a onClick={toggleHint} className="show-more-link">
+                  {showLongHint ? ' Show Less' : ' Show More'}
+                </a>
+              )}
+            </p>
             <input
               type="range"
               min="1"
